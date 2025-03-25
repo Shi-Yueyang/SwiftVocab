@@ -1,0 +1,10 @@
+<view class="container">
+  <navigation-bar></navigation-bar>
+  <view class="quiz">
+    <text class="quiz-word">{{quizWord.word}}</text>
+    <text class="quiz-definition">{{quizWord.definition}}</text>
+    <input class="quiz-input" placeholder="Enter the word" bindinput="onInput" value="{{inputValue}}" />
+    <button bindtap="onSubmit">Submit</button>
+    <text class="quiz-feedback">{{feedback}}</text>
+  </view>
+</view>

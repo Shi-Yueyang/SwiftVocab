@@ -1,0 +1,5 @@
+<view class="container">
+  <text>{{message}}</text>
+  <button bindtap="goToVocabulary">Let the game begin</button>
+  <navigation-bar></navigation-bar>
+</view>

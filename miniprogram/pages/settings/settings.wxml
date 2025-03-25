@@ -1,0 +1,4 @@
+<view class="container">
+  <text>Settings Page</text>
+  <navigation-bar></navigation-bar>
+</view>

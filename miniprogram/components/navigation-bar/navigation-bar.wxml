@@ -1,0 +1,10 @@
+<view class="navigation-bar">
+  <view class="navigation-bar-item" bindtap="goToIndex">
+    <mp-icon type="field" icon="home" color="black" size="{{25}}"></mp-icon>
+    <text>Home</text>
+  </view>
+  <view class="navigation-bar-item" bindtap="goToSettings">
+    <mp-icon type="field" icon="sticker" color="black" size="{{25}}"></mp-icon>
+    <text>Me</text>
+  </view>
+</view>
