@@ -5,6 +5,8 @@
     <text class="quiz-definition">{{quizWord.definition}}</text>
     <input class="quiz-input" placeholder="Enter the word" bindinput="onInput" value="{{inputValue}}" />
     <button bindtap="onSubmit">Submit</button>
-    <text class="quiz-feedback">{{feedback}}</text>
+    <button class="hint-button" bindtap="onHint">Hint</button>
+    <text class="hint-message" >{{hintMessage}}</text>
+    <text class="quiz-feedback" >{{feedback}}</text>
   </view>
 </view>
