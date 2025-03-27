@@ -147,7 +147,6 @@ Page({
         currentIndex: startIndex,
         currentWord: { ...chosenWord, matching_lyric: chosenWord.matching_lyric.toLowerCase().replace(chosenWord.word, '_____') }
       });
-      console.log(this.data.currentWord)
     } catch (err) {
       console.error('Failed to fetch words:', err);
       wx.showToast({

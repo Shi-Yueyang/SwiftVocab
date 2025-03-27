@@ -1,31 +1,13 @@
 <view class="word-card">
   <view class="quiz-word">{{quizWord}}</view>
   <view class="definition">Definition: {{definition}}</view>
-  <view class="matching-lyric" wx:if="{{isShowHint}}">{{matchingLyric}}</view>
-  
-    <input 
-      class="word-input" 
-      placeholder="Enter the word" 
-      value="{{inputValue}}"
-      bindinput="onInput"
-      disabled="{{isAnswerLocked}}"
-    />
-    <view class="button-row">
-      <button 
-        class="submit-button" 
-        bindtap="onSubmit"
-        disabled="{{isAnswerLocked || !inputValue}}"
-      >
-        Submit
-      </button>
-      <button 
-        class="hint-button" 
-        bindtap="showHint"
-        disabled="{{isAnswerLocked}}"
-      >
-        💡
-      </button>
+  <input class="word-input" placeholder="Enter the word" value="{{inputValue}}" bindinput="onInput" disabled="{{isAnswerLocked}}" />
+  <view class="button-row">
+    <button class="submit-button" bindtap="onSubmit">Submit</button>
+    <view class="hint" bindtap="showHint">
+      <mp-icon type="field" icon="info" color="black" size="{{25}}"></mp-icon>
+      <text>Hint</text>
     </view>
-
-
-</view> 
+  </view>
+</view>
+<view class="matching-lyric" wx:if="{{isShowHint}}">{{matchingLyric}}</view>
