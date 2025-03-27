@@ -1,0 +1,31 @@
+<view class="word-card">
+  <view class="quiz-word">{{quizWord}}</view>
+  <view class="definition">Definition: {{definition}}</view>
+  <view class="matching-lyric" wx:if="{{isShowHint}}">{{matchingLyric}}</view>
+  
+    <input 
+      class="word-input" 
+      placeholder="Enter the word" 
+      value="{{inputValue}}"
+      bindinput="onInput"
+      disabled="{{isAnswerLocked}}"
+    />
+    <view class="button-row">
+      <button 
+        class="submit-button" 
+        bindtap="onSubmit"
+        disabled="{{isAnswerLocked || !inputValue}}"
+      >
+        Submit
+      </button>
+      <button 
+        class="hint-button" 
+        bindtap="showHint"
+        disabled="{{isAnswerLocked}}"
+      >
+        💡
+      </button>
+    </view>
+
+
+</view> 

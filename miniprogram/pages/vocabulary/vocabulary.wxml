@@ -1,12 +1,19 @@
 <view class="container">
   <navigation-bar></navigation-bar>
-  <view class="quiz">
-    <text class="quiz-word">{{quizWord.word}}</text>
-    <text class="quiz-definition">{{quizWord.definition}}</text>
-    <input class="quiz-input" placeholder="Enter the word" bindinput="onInput" value="{{inputValue}}" />
-    <button bindtap="onSubmit">Submit</button>
-    <button class="hint-button" bindtap="onHint">Hint</button>
-    <text class="hint-message" >{{hintMessage}}</text>
-    <text class="quiz-feedback" >{{feedback}}</text>
+  <view class="progress-bar">
+    <text>Progress: {{currentIndex + 1}}/{{words.length}}</text>
   </view>
+
+  <word-card 
+    wx:if="{{currentWord}}"
+    word="{{currentWord.word}}"
+    definition="{{currentWord.definition}}"
+    matching-lyric="{{currentWord.matching_lyric}}"
+    quiz-word="{{quizWord}}"
+    bind:submit="onSubmit"
+    bind:next="nextWord"
+    bind:retry="retryWord"
+  />
+
+
 </view>
