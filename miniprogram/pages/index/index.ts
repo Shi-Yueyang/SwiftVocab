@@ -6,13 +6,20 @@ interface UserInfo {
   province: string;
   city: string;
   language: string;
+  openid?: string;
+}
+
+interface OpenIdResponse {
+  event: any;
+  openid: string;
+  appid: string;
+  unionid: string;
+  test: string;
 }
 
 Page({
   data: {
-    message: '...Ready for it?',
-    userInfo: null as UserInfo | null,
-    hasUserInfo: false
+    message: '...Ready for it?'
   },
   onLoad() {
     console.log('Index page loaded');
@@ -22,10 +29,9 @@ Page({
     try {
       const storedUserInfo = wx.getStorageSync('userInfo');
       if (storedUserInfo) {
-        this.setData({
-          userInfo: storedUserInfo,
-          hasUserInfo: true
-        });
+        const app = getApp<IAppOption>();
+        app.globalData.userInfo = storedUserInfo;
+        app.globalData.hasUserInfo = true;
         console.log('Auto-login successful with stored user info');
       }
     } catch (err) {
@@ -37,21 +43,38 @@ Page({
       desc: 'Used for user profile display',
       success: (profileRes) => {
         const userInfo = profileRes.userInfo;
-        this.setData({
-          userInfo: userInfo,
-          hasUserInfo: true
+        const app = getApp<IAppOption>();
+        app.globalData.userInfo = userInfo;
+        app.globalData.hasUserInfo = true;
+        
+        // Get openid from cloud function
+        wx.cloud.callFunction({
+          name: 'getOpenId',
+          success: (res) => {
+            const result = res.result as OpenIdResponse;
+            console.log('OpenID:', result.openid);
+            console.log('Test:', result.test);
+            // Store user info and openid for future auto-login
+            try {
+              wx.setStorageSync('userInfo', {
+                ...userInfo,
+                openid: result.openid
+              });
+            } catch (err) {
+              console.error('Failed to store user info:', err);
+            }
+            // Navigate to vocabulary page after successful login
+            this.navigateToVocabulary();
+          },
+          fail: (err) => {
+            console.error('Failed to get openid:', err);
+            wx.showToast({
+              title: 'Failed to get user ID',
+              icon: 'none',
+              duration: 2000
+            });
+          }
         });
-        // Store user info for future auto-login
-        try {
-          wx.setStorageSync('userInfo', userInfo);
-        } catch (err) {
-          console.error('Failed to store user info:', err);
-        }
-        // Here you would typically send the code to your backend
-        // to exchange for openid and session_key
-        console.log('Login successful:', userInfo);
-        // Navigate to vocabulary page after successful login
-        this.navigateToVocabulary();
       },
       fail: (err) => {
         console.error('Failed to get user profile:', err);
@@ -70,7 +93,8 @@ Page({
     });
   },
   goToVocabulary() {
-    if (this.data.hasUserInfo) {
+    const app = getApp<IAppOption>();
+    if (app.globalData.hasUserInfo) {
       this.navigateToVocabulary();
     } else {
       this.handleLogin();

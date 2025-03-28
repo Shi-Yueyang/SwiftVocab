@@ -7,11 +7,8 @@ interface Word {
 
 interface LearningProgress {
   currentIndex: number;
-  totalWords: number;
-  completedWords: string[]; // Array of completed word IDs
-  lastUpdated: string;
   _id?: string; // For cloud database
-  _openid?: string; // For cloud database
+  _openid?: string; //to identify the user
 }
 
 interface DBWord extends Word {
@@ -28,9 +25,9 @@ Page({
   data: {
     currentWord: null as Word | null,
     quizWord: '',
-    currentIndex: 0,
-    words: [] as Word[],
     progress: null as LearningProgress | null,
+    words: [] as Word[],
+    currentIndex: 0,
     showResult: false,
     isCorrect: false,
     isShowHint: false,
@@ -48,10 +45,11 @@ Page({
   async loadProgress() {
     try {
       const db = wx.cloud.database();
-      // Get the current user's progress
+      const app = getApp<IAppOption>();
+
       const { data } = await db.collection('userProgress')
         .where({
-          _openid: db.command.exists(true)
+          _openid:  app.globalData.userInfo?.openid
         })
         .get();
 
@@ -60,14 +58,27 @@ Page({
         this.setData({
           progress: {
             currentIndex: progress.currentIndex,
-            totalWords: progress.totalWords,
-            completedWords: progress.completedWords,
-            lastUpdated: progress.lastUpdated,
             _id: progress._id,
             _openid: progress._openid
           }
         });
         console.log('Loaded progress from cloud:', progress);
+      }
+      else{
+        // Create initial progress document
+        const initialProgress: LearningProgress = {
+          currentIndex: 0,
+          _openid: app.globalData.userInfo?.openid,
+        };
+
+        await db.collection('userProgress').add({
+          data: initialProgress
+        });
+
+        this.setData({
+          progress: initialProgress
+        });
+        console.log('Created initial progress in cloud:', initialProgress);
       }
     } catch (err) {
       console.error('Failed to load progress from cloud:', err);
@@ -77,19 +88,13 @@ Page({
   async saveProgress() {
     try {
       const db = wx.cloud.database();
-      const progress: LearningProgress = {
-        currentIndex: this.data.currentIndex,
-        totalWords: this.data.words.length,
-        completedWords: this.data.words
-          .slice(0, this.data.currentIndex)
-          .map(word => word.id),
-        lastUpdated: new Date().toISOString()
-      };
+      const app = getApp<IAppOption>();
+
 
       // Check if progress document exists
       const { data } = await db.collection('userProgress')
         .where({
-          _openid: db.command.exists(true)
+          _openid: app.globalData.userInfo?.openid
         })
         .get();
 
@@ -97,16 +102,16 @@ Page({
         const existingProgress = data[0] as DBProgress;
         // Update existing progress
         await db.collection('userProgress').doc(existingProgress._id).update({
-          data: progress
+          data: {
+            currentIndex: this.data.currentIndex,
+            _openid: app.globalData.userInfo?.openid
+          }
         });
       } else {
         // Create new progress document
-        await db.collection('userProgress').add({
-          data: progress
-        });
+
       }
 
-      this.setData({ progress });
     } catch (err) {
       console.error('Failed to save progress to cloud:', err);
       wx.showToast({
@@ -119,7 +124,7 @@ Page({
   async fetchWords() {
     try {
       const db = wx.cloud.database();
-      const { data } = await db.collection('vocab').get();
+      const { data } = await db.collection('vocab').limit(10).get();
 
       // Convert DB response to Word type
       const words = (data as DBWord[]).map(item => ({
@@ -129,20 +134,18 @@ Page({
         matching_lyric: item.matching_lyric
       }));
 
-      // Sort words by ID to ensure consistent order
-      const sortedWords = words.sort((a, b) => a.id.localeCompare(b.id));
 
       // If there's progress, start from the last position
       const startIndex = this.data.progress?.currentIndex || 0;
 
-      const chosenWord = sortedWords[startIndex];
+      const chosenWord = words[startIndex];
       const shuffledWord = chosenWord.word
         .split('')
         .sort(() => Math.random() - 0.5)
         .join('');
 
       this.setData({
-        words: sortedWords,
+        words,
         quizWord: shuffledWord,
         currentIndex: startIndex,
         currentWord: { ...chosenWord, matching_lyric: chosenWord.matching_lyric.toLowerCase().replace(chosenWord.word, '_____') }
