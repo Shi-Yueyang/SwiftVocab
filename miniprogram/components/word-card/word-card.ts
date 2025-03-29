@@ -20,41 +20,22 @@ Component({
 
   data: {
     inputValue: '',
-    isAnswerLocked: false,
-    showResult: false,
-    isCorrect: false,
     isShowHint: false
   },
 
   methods: {
     onInput(e: any) {
-      this.setData({
-        inputValue: e.detail.value
-      });
+      this.triggerEvent('input', e.detail.value);
     },
 
     onSubmit() {
-      const isCorrect = this.data.inputValue.toLowerCase() === this.properties.word.toLowerCase();
-      
-      this.setData({
-        isAnswerLocked: true,
-        showResult: true,
-        isCorrect: isCorrect
-      });
-
-      this.triggerEvent('submit', { isCorrect });
-    },
-
-    nextWord() {
       this.setData({
         inputValue: '',
-        isAnswerLocked: false,
-        showResult: false,
         isShowHint: false
       });
-      this.triggerEvent('next');
-    },
 
+      this.triggerEvent('submit');
+    },
 
 
     showHint() {

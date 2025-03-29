@@ -1,0 +1,7 @@
+<view class="dataset-selector">
+  <picker bindchange="bindDatasetChange" value="{{datasetIndex}}" range="{{datasetList}}">
+    <view class="picker">
+       {{datasetList[datasetIndex]}}
+    </view>
+  </picker>
+</view>

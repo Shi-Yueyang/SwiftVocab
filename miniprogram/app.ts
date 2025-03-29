@@ -12,14 +12,12 @@ interface UserInfo {
 interface IAppOption {
   globalData: {
     userInfo: UserInfo | null;
-    hasUserInfo: boolean;
   }
 }
 
 App<IAppOption>({
   globalData: {
     userInfo: null,
-    hasUserInfo: false
   },
   onLaunch() {
     wx.cloud.init({

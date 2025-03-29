@@ -1,10 +1,10 @@
 <view class="navigation-bar">
   <view class="navigation-bar-item" bindtap="goToIndex">
     <mp-icon type="field" icon="home" color="black" size="{{25}}"></mp-icon>
-    <text>Home</text>
+    <text>首页</text>
   </view>
   <view class="navigation-bar-item" bindtap="goToSettings">
     <mp-icon type="field" icon="sticker" color="black" size="{{25}}"></mp-icon>
-    <text>Me</text>
+    <text>我</text>
   </view>
 </view>

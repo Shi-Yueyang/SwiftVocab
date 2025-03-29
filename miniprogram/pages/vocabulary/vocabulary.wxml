@@ -1,16 +1,16 @@
 <view class="container">
   <navigation-bar></navigation-bar>
   <view class="progress-bar">
-    <text>Progress: {{currentIndex + 1}}/{{words.length}}</text>
+    <text>Progress: {{currentIndex + 1}}/{{allWords.length}}</text>
   </view>
 
   <word-card 
-    wx:if="{{currentWord}}"
     word="{{currentWord.word}}"
     definition="{{currentWord.definition}}"
     matching-lyric="{{currentWord.matching_lyric}}"
     quiz-word="{{quizWord}}"
     bind:submit="onSubmit"
+    bind:input="onInput"
     bind:next="nextWord"
     bind:retry="retryWord"
   />

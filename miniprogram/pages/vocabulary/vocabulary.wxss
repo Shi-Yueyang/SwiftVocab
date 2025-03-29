@@ -14,5 +14,6 @@
   background-color: #fff;
   border-radius: 10rpx;
   box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+  margin-bottom: 30rpx;
 }
 

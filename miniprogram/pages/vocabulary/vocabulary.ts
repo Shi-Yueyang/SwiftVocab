@@ -6,7 +6,7 @@ interface Word {
 }
 
 interface LearningProgress {
-  currentIndex: number;
+  finalIndex: number;
   _id?: string; // For cloud database
   _openid?: string; //to identify the user
 }
@@ -23,100 +23,94 @@ interface DBProgress extends LearningProgress {
 
 Page({
   data: {
+    allWords: [] as Word[],
     currentWord: null as Word | null,
-    quizWord: '',
+    quizWord: "",
     progress: null as LearningProgress | null,
-    words: [] as Word[],
     currentIndex: 0,
-    showResult: false,
-    isCorrect: false,
     isShowHint: false,
     selectedOption: -1,
-    isAnswerLocked: false,
-    inputValue: '',
-    feedback: ''
+    inputValue: "",
+    feedback: "",
   },
 
   onLoad() {
     this.loadProgress();
-    this.fetchWords();
   },
 
   async loadProgress() {
     try {
       const db = wx.cloud.database();
-      const app = getApp<IAppOption>();
 
-      const { data } = await db.collection('userProgress')
-        .where({
-          _openid:  app.globalData.userInfo?.openid
-        })
+      const { data } = await db
+        .collection("userProgress")
         .get();
 
       if (data && data.length > 0) {
+        
         const progress = data[0] as DBProgress;
         this.setData({
           progress: {
-            currentIndex: progress.currentIndex,
+            finalIndex: progress.finalIndex,
             _id: progress._id,
-            _openid: progress._openid
-          }
+            _openid: progress._openid,
+          },
         });
-        console.log('Loaded progress from cloud:', progress);
-      }
-      else{
+        console.log("Loaded progress from cloud:", progress);
+      } else {
         // Create initial progress document
         const initialProgress: LearningProgress = {
-          currentIndex: 0,
-          _openid: app.globalData.userInfo?.openid,
+          finalIndex: 0,
         };
 
-        await db.collection('userProgress').add({
-          data: initialProgress
+        await db.collection("userProgress").add({
+          data: initialProgress,
         });
 
         this.setData({
-          progress: initialProgress
+          progress: initialProgress,
         });
-        console.log('Created initial progress in cloud:', initialProgress);
+        console.log("Created initial progress in cloud:", initialProgress);
       }
+
+      this.fetchWords();
     } catch (err) {
-      console.error('Failed to load progress from cloud:', err);
+      console.error("Failed to load progress from cloud:", err);
     }
   },
 
   async saveProgress() {
     try {
-      const db = wx.cloud.database();
-      const app = getApp<IAppOption>();
+      if (this.data.progress) {
+        const db = wx.cloud.database();
+        const app = getApp<IAppOption>();
+        const { data } = await db
+          .collection("userProgress")
+          .where({
+            _id: this.data.progress._id,
+          })
+          .get();
 
-
-      // Check if progress document exists
-      const { data } = await db.collection('userProgress')
-        .where({
-          _openid: app.globalData.userInfo?.openid
-        })
-        .get();
-
-      if (data && data.length > 0) {
-        const existingProgress = data[0] as DBProgress;
-        // Update existing progress
-        await db.collection('userProgress').doc(existingProgress._id).update({
-          data: {
-            currentIndex: this.data.currentIndex,
-            _openid: app.globalData.userInfo?.openid
-          }
-        });
-      } else {
-        // Create new progress document
-
+        if (data && data.length > 0 && app.globalData.userInfo) {
+          const existingProgress = data[0] as DBProgress;
+          // Update existing progress
+          await db
+            .collection("userProgress")
+            .doc(existingProgress._id)
+            .update({
+              data: {
+                finalIndex:
+                  existingProgress.finalIndex + this.data.allWords.length,
+                _openid: app.globalData.userInfo.openid,
+              },
+            });
+        }
       }
-
     } catch (err) {
-      console.error('Failed to save progress to cloud:', err);
+      console.error("Failed to save progress to cloud:", err);
       wx.showToast({
-        title: 'Failed to save progress',
-        icon: 'none'
+        title: "Failed to save progress",
+        icon: "none",
       });
     }
   },
@@ -124,123 +118,108 @@ Page({
   async fetchWords() {
     try {
       const db = wx.cloud.database();
-      const { data } = await db.collection('vocab').limit(10).get();
+      const startIndex = this.data.progress ? this.data.progress.finalIndex : 0;
+      console.log("start index", startIndex);
+      const { data } = await db
+        .collection("vocab")
+        .skip(startIndex)
+        .limit(5)
+        .get(); // Fetch from startIndex
 
-      // Convert DB response to Word type
-      const words = (data as DBWord[]).map(item => ({
+      const allWords = (data as DBWord[]).map((item) => ({
         id: item._id,
         word: item.word,
         definition: item.definition,
-        matching_lyric: item.matching_lyric
+        matching_lyric: item.matching_lyric,
       }));
 
-
-      // If there's progress, start from the last position
-      const startIndex = this.data.progress?.currentIndex || 0;
-
-      const chosenWord = words[startIndex];
-      const shuffledWord = chosenWord.word
-        .split('')
+      const nextWord = allWords[0];
+      const shuffledWord = nextWord.word
+        .split("")
         .sort(() => Math.random() - 0.5)
-        .join('');
+        .join("");
 
       this.setData({
-        words,
+        allWords: allWords,
         quizWord: shuffledWord,
-        currentIndex: startIndex,
-        currentWord: { ...chosenWord, matching_lyric: chosenWord.matching_lyric.toLowerCase().replace(chosenWord.word, '_____') }
+        currentIndex: 0,
+        currentWord: {
+          ...nextWord,
+          matching_lyric: nextWord.matching_lyric
+            .toLowerCase()
+            .replace(nextWord.word, "_____"),
+        },
       });
     } catch (err) {
-      console.error('Failed to fetch words:', err);
+      console.error("Failed to fetch words:", err);
       wx.showToast({
-        title: 'Failed to load words',
-        icon: 'none'
+        title: "Failed to load words",
+        icon: "none",
       });
     }
   },
 
   onInput(e: any) {
     this.setData({
-      inputValue: e.detail.value
+      inputValue: e.detail,
     });
   },
 
   onSubmit() {
-    if (this.data.isAnswerLocked) return;
-
     const inputValue = this.data.inputValue.toLowerCase().trim();
-    const correctWord = this.data.currentWord?.word.toLowerCase();
-
-    this.setData({
-      isAnswerLocked: true,
-      showResult: true,
-      isCorrect: inputValue === correctWord
-    });
-
-    // Save progress after a short delay if correct
-    setTimeout(() => {
-      if (inputValue === correctWord) {
-        this.nextWord();
-      }
-    }, 1500);
+    const correctWord = this.data.currentWord
+      ? this.data.currentWord.word.toLowerCase()
+      : "";
+    if (inputValue === correctWord) {
+      this.nextWord();
+    }
   },
 
   showHint() {
     this.setData({
-      isShowHint: true
+      isShowHint: true,
     });
   },
 
   async nextWord() {
     const nextIndex = this.data.currentIndex + 1;
-
-    if (nextIndex >= this.data.words.length) {
-      // All words completed
+    if (nextIndex === this.data.allWords.length) {
+      await this.saveProgress();
       wx.showModal({
-        title: 'Congratulations!',
-        content: 'You have completed all words!',
-        showCancel: false,
-        success: async () => {
-          try {
-            const db = wx.cloud.database();
-            // Delete progress document to reset progress
-            if (this.data.progress?._id) {
-              await db.collection('userProgress').doc(this.data.progress._id).remove();
-            }
-
-            this.setData({
-              currentIndex: 0,
-              progress: null,
-              currentWord: this.data.words[0],
-              inputValue: '',
-              feedback: ''
+        title: "Congratulations!",
+        content: "你完成了本次学习！",
+        showCancel: true,
+        cancelText: "继续学习",
+        confirmText: "返回首页",
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: "/pages/index/index",
             });
-          } catch (err) {
-            console.error('Failed to reset progress:', err);
+          } else {
+            this.fetchWords();
           }
-        }
+        },
       });
       return;
+    } else {
+      const nextWord = this.data.allWords[nextIndex];
+      const shuffledWord = nextWord.word
+        .split("")
+        .sort(() => Math.random() - 0.5)
+        .join("");
+      this.setData({
+        currentIndex: nextIndex,
+        quizWord: shuffledWord,
+        inputValue: "",
+        feedback: "",
+        currentWord: {
+          ...nextWord,
+          matching_lyric: nextWord.matching_lyric
+            .toLowerCase()
+            .replace(nextWord.word, "_____"),
+        },
+      });
     }
-
-    this.setData({
-      currentIndex: nextIndex,
-      currentWord: this.data.words[nextIndex],
-      showResult: false,
-      inputValue: '',
-      feedback: '',
-      isAnswerLocked: false
-    });
-
-    await this.saveProgress();
   },
-
-  retryWord() {
-    this.setData({
-      showResult: false,
-      inputValue: '',
-      feedback: '',
-      isAnswerLocked: false
-    });
-  }
 });

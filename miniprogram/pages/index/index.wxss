@@ -5,11 +5,13 @@ page {
   flex-direction: column;
 }
 
-.scrollarea {
-  flex: 1;
-  overflow-y: hidden;
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
-
 .userinfo {
   display: flex;
   flex-direction: column;
@@ -30,52 +32,6 @@ page {
   font-size: 32rpx;
 }
 
-.usermotto {
-  margin-top: 200rpx;
-}
-
-.avatar-wrapper {
-  padding: 0;
-  width: 56px !important;
-  border-radius: 8px;
-  margin-top: 40px;
-  margin-bottom: 40px;
-}
-
-.avatar {
-  display: block;
-  width: 56px;
-  height: 56px;
-}
-
-.nickname-wrapper {
-  display: flex;
-  width: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-  border-top: .5px solid rgba(0, 0, 0, 0.1);
-  border-bottom: .5px solid rgba(0, 0, 0, 0.1);
-  color: black;
-}
-
-.nickname-label {
-  width: 105px;
-}
-
-.nickname-input {
-  flex: 1;
-}
-
-.container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 200rpx 0;
-  box-sizing: border-box;
-}
-
 button {
   margin: 20rpx;
   padding: 0 40rpx;
@@ -83,10 +39,7 @@ button {
   line-height: 80rpx;
   font-size: 32rpx;
   border-radius: 40rpx;
-  background: #07c160;
+  background: #0d7d43;
   color: #fff;
 }
 
-button:active {
-  opacity: 0.8;
-}
