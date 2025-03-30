@@ -42,12 +42,9 @@ Page({
     try {
       const db = wx.cloud.database();
 
-      const { data } = await db
-        .collection("userProgress")
-        .get();
+      const { data } = await db.collection("userProgress").get();
 
       if (data && data.length > 0) {
-        
         const progress = data[0] as DBProgress;
         this.setData({
           progress: {
@@ -83,7 +80,6 @@ Page({
     try {
       if (this.data.progress) {
         const db = wx.cloud.database();
-        const app = getApp<IAppOption>();
         const { data } = await db
           .collection("userProgress")
           .where({
@@ -91,7 +87,7 @@ Page({
           })
           .get();
 
-        if (data && data.length > 0 && app.globalData.userInfo) {
+        if (data && data.length > 0) {
           const existingProgress = data[0] as DBProgress;
           // Update existing progress
           await db
@@ -101,7 +97,6 @@ Page({
               data: {
                 finalIndex:
                   existingProgress.finalIndex + this.data.allWords.length,
-                _openid: app.globalData.userInfo.openid,
               },
             });
         }

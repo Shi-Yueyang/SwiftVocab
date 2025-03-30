@@ -1,22 +1,21 @@
 Component({
-  /**
-   * Component properties
-   */
   properties: {
-
+    sources: {
+      type: Array,
+      value: [] as string[],
+      observer: function(newVal: string[]) {
+        this.setData({
+          datasetList: newVal
+        });
+      }
+    }
   },
 
-  /**
-   * Component initial data
-   */
   data: {
-    datasetList: ['Eras book'],
+    datasetList: [] as string[],
     datasetIndex: 0
   },
 
-  /**
-   * Component methods
-   */
   methods: {
     bindDatasetChange: function(e: WechatMiniprogram.TouchEvent<any>) {
       console.log('picker发送选择改变, 携带值为', e.detail.value)

@@ -1,14 +1,6 @@
 <view class="container">
-  <view class="userinfo">
-    <block wx:if="{{hasUserInfo}}">
-      <image class="userinfo-avatar" src="{{localUserInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{localUserInfo.nickName}}</text>
-    </block>
-  </view>
-
-
-  <dataset-selector binddatasetchange="onDatasetChange"></dataset-selector>
-  <button  bindtap="goToVocabulary">Go to Vocabulary</button>
-
+  
+  <dataset-selector sources="{{sources}}" binddatasetchange="onDatasetChange"></dataset-selector>
+  <button bindtap="goToVocabulary">Go to Vocabulary</button>
   <navigation-bar></navigation-bar>
 </view>

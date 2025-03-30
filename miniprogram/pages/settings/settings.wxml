@@ -1,4 +1,24 @@
 <view class="container">
-  <text>实现中</text>
+
+  <view class="progress-list">
+    <view class="progress-item">
+      <text class="progress-label">已学单词</text>
+      <text class="progress-value">0</text>
+    </view>
+    <view class="progress-item">
+      <text class="progress-label">学习时长</text>
+      <text class="progress-value">0分钟</text>
+    </view>
+  </view>
+
+  <view class="category-list">
+    <block wx:for="{{vocabularyCategories}}" wx:key="name">
+      <view class="category-item">
+        <text class="category-name">{{item.name}}</text>
+        <progress percent="{{item.progress}}" border-radius="8" stroke-width="8" activeColor="#07c160"/>
+        <button class="progress-button">重置</button>
+      </view>
+    </block>
+  </view>
   <navigation-bar></navigation-bar>
 </view>

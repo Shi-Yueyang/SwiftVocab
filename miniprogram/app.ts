@@ -1,23 +1,12 @@
-interface UserInfo {
-  avatarUrl: string;
-  nickName: string;
-  gender: number;
-  country: string;
-  province: string;
-  city: string;
-  language: string;
-  openid?: string;
-}
-
 interface IAppOption {
   globalData: {
-    userInfo: UserInfo | null;
+    sources: string[];
   }
 }
 
 App<IAppOption>({
   globalData: {
-    userInfo: null,
+    sources: [],
   },
   onLaunch() {
     wx.cloud.init({
