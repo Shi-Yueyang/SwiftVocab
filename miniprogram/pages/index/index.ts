@@ -6,13 +6,16 @@ interface OpenIdResponse {
   test: string;
 }
 
+
+
 // Add getApp type
 const app = getApp<IAppOption>();
 
 Page({
   data: {
   },
-  onLoad() {
+  async onLoad() {
+    await this.loadUserExperience();
     console.log("Index page loaded");
     this.fetchUniqueSources();
   },
@@ -43,9 +46,39 @@ Page({
     }
   },
 
+  async loadUserExperience() {
+    try {
+      const db = wx.cloud.database();
+      const { data } = await db.collection("userExperience").get();
+
+      if (data && data.length > 0) {
+        const userExp = data[0] as UserExperience;
+        app.globalData.userExperience = {
+          totalWords: userExp.totalWords,
+          learningTime: userExp.learningTime
+        };
+      } else {
+        // Create initial user experience document
+        const initialExperience = {
+          totalWords: 0,
+          learningTime: 0
+        };
+
+        await db.collection("userExperience").add({
+          data: initialExperience
+        });
+
+        app.globalData.userExperience = initialExperience;
+      }
+      console.log("User experience loaded:", app.globalData.userExperience);
+    } catch (err) {
+      console.error("Failed to load user experience:", err);
+    }
+  },
+
   goToVocabulary() {
     console.log("Navigating to vocabulary page");
-    wx.navigateTo({
+    wx.switchTab({
       url: "/pages/vocabulary/vocabulary",
     });    
   },

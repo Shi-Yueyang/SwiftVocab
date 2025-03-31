@@ -37,6 +37,9 @@ Page({
   onLoad() {
     this.loadProgress();
   },
+  onShow() {
+    wx.showTabBar({});
+  },
 
   async loadProgress() {
     try {
@@ -100,6 +103,17 @@ Page({
               },
             });
         }
+      }
+
+      const app = getApp<IAppOption>();
+      if(app.globalData.userExperience) {
+        app.globalData.userExperience.totalWords += this.data.allWords.length;
+        const db = wx.cloud.database();
+        await db.collection("userExperience").doc(app.globalData.userExperience._id).update({
+          data: {
+            totalWords: app.globalData.userExperience.totalWords,
+          },
+        });
       }
     } catch (err) {
       console.error("Failed to save progress to cloud:", err);
@@ -188,7 +202,7 @@ Page({
         confirmText: "返回首页",
         success: (res) => {
           if (res.confirm) {
-            wx.navigateTo({
+            wx.switchTab({
               url: "/pages/index/index",
             });
           } else {

@@ -1,12 +1,21 @@
+interface UserExperience {
+  totalWords: number;
+  learningTime: number; // in seconds
+  _id: string; // For cloud database
+  _openid: string; // to identify the user
+}
+
 interface IAppOption {
   globalData: {
     sources: string[];
+    userExperience: UserExperience | null;
   }
 }
 
 App<IAppOption>({
   globalData: {
     sources: [],
+    userExperience: null,
   },
   onLaunch() {
     wx.cloud.init({

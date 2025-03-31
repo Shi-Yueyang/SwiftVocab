@@ -2,5 +2,4 @@
   
   <dataset-selector sources="{{sources}}" binddatasetchange="onDatasetChange"></dataset-selector>
   <button bindtap="goToVocabulary">Go to Vocabulary</button>
-  <navigation-bar></navigation-bar>
 </view>
