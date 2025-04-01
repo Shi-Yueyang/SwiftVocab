@@ -1,20 +1,20 @@
 interface UserExperience {
   totalWords: number;
   learningTime: number; // in seconds
-  _id: string; // For cloud database
-  _openid: string; // to identify the user
+  _id?: string; // For cloud database
+  _openid?: string; //to identify the user
 }
 
 interface IAppOption {
   globalData: {
-    sources: string[];
+    allSources: string[];
     userExperience: UserExperience | null;
   }
 }
 
 App<IAppOption>({
   globalData: {
-    sources: [],
+    allSources: [],
     userExperience: null,
   },
   onLaunch() {

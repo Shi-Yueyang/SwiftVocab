@@ -7,17 +7,18 @@ interface OpenIdResponse {
 }
 
 
-
 // Add getApp type
 const app = getApp<IAppOption>();
 
 Page({
   data: {
+    allSources: [] as string[],
+    sourceId: 1,
   },
   async onLoad() {
     await this.loadUserExperience();
+    await this.fetchUniqueSources();
     console.log("Index page loaded");
-    this.fetchUniqueSources();
   },
 
   async fetchUniqueSources() {
@@ -34,12 +35,13 @@ Page({
       const sources = result.list as Array<{ _id: string; count: number }>
       console.log('Unique sources fetched:', sources);
       
-      const sourceNames = sources.map(source => source._id);
+      const allSources = sources.map(source => source._id);
       // Update both global and local data
-      app.globalData.sources = sourceNames;
+      app.globalData.allSources = allSources;
       this.setData({
-        sources: sourceNames
+        allSources: allSources
       });
+ 
 
     } catch (error) {
       console.error('Error fetching unique sources:', error);
@@ -76,10 +78,16 @@ Page({
     }
   },
 
+  onSourceChange(e: any) {
+    this.setData({
+      sourceId:e.detail.sourceId,
+    });
+  },
+
   goToVocabulary() {
     console.log("Navigating to vocabulary page");
-    wx.switchTab({
-      url: "/pages/vocabulary/vocabulary",
+    wx.navigateTo({
+      url: `/pages/vocabulary/vocabulary?sourceId=${this.data.sourceId}`,
     });    
   },
 });

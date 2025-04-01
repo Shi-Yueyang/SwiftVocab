@@ -21,6 +21,11 @@ interface DBProgress extends LearningProgress {
   _openid: string;
 }
 
+interface DBUserExperience extends UserExperience {
+  _id: string;
+  _openid: string;
+}
+
 Page({
   data: {
     allWords: [] as Word[],
@@ -32,14 +37,18 @@ Page({
     selectedOption: -1,
     inputValue: "",
     feedback: "",
+    sourceId: 0,
   },
 
-  onLoad() {
+  onLoad(options) {
     this.loadProgress();
+    if(options.sourceId) {
+      this.setData({
+        sourceId: parseInt(options.sourceId),
+      });
+    }
   },
-  onShow() {
-    wx.showTabBar({});
-  },
+
 
   async loadProgress() {
     try {
@@ -106,7 +115,7 @@ Page({
       }
 
       const app = getApp<IAppOption>();
-      if(app.globalData.userExperience) {
+      if(app.globalData.userExperience && app.globalData.userExperience._id) {
         app.globalData.userExperience.totalWords += this.data.allWords.length;
         const db = wx.cloud.database();
         await db.collection("userExperience").doc(app.globalData.userExperience._id).update({

@@ -28,12 +28,7 @@
         "iconPath": "images/icons/home.png",
         "selectedIconPath": "images/icons/home-active.png"
       },
-      {
-        "pagePath": "pages/vocabulary/vocabulary",
-        "text": "单词本",
-        "iconPath": "images/icons/business.png",
-        "selectedIconPath": "images/icons/business-active.png"
-      },
+
       {
         "pagePath": "pages/settings/settings",
         "text": "我的",
