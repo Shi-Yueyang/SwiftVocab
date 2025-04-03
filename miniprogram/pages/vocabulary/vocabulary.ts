@@ -3,12 +3,15 @@ interface Word {
   word: string;
   definition: string;
   matching_lyric: string;
+  title: string;
 }
 
 interface LearningProgress {
   finalIndex: number;
-  _id?: string; // For cloud database
-  _openid?: string; //to identify the user
+  source: string;
+  totalNumber?:number;
+  _id?: string; 
+  _openid?: string; 
 }
 
 interface DBWord extends Word {
@@ -33,43 +36,49 @@ Page({
     quizWord: "",
     progress: null as LearningProgress | null,
     currentIndex: 0,
-    isShowHint: false,
     selectedOption: -1,
     inputValue: "",
     feedback: "",
-    sourceId: 0,
+    source: "",
+    title: "",
   },
 
   onLoad(options) {
     this.loadProgress();
-    if(options.sourceId) {
+    const app = getApp<IAppOption>();
+    if (options.sourceId) {
+      const source = app.globalData.allSources[parseInt(options.sourceId)];
       this.setData({
-        sourceId: parseInt(options.sourceId),
+        source: source.name,
       });
     }
   },
-
 
   async loadProgress() {
     try {
       const db = wx.cloud.database();
 
-      const { data } = await db.collection("userProgress").get();
-
-      if (data && data.length > 0) {
-        const progress = data[0] as DBProgress;
+      const { data } = await db
+        .collection("userProgress")
+        .get();
+      const progress = (data as DBProgress[]).find(
+        (item) => item.source === this.data.source  
+      );
+      console.log('progress',progress);
+      if (progress) {
         this.setData({
           progress: {
             finalIndex: progress.finalIndex,
+            source: progress.source,
             _id: progress._id,
             _openid: progress._openid,
           },
         });
-        console.log("Loaded progress from cloud:", progress);
       } else {
         // Create initial progress document
         const initialProgress: LearningProgress = {
           finalIndex: 0,
+          source: this.data.source,
         };
 
         await db.collection("userProgress").add({
@@ -115,14 +124,17 @@ Page({
       }
 
       const app = getApp<IAppOption>();
-      if(app.globalData.userExperience && app.globalData.userExperience._id) {
+      if (app.globalData.userExperience && app.globalData.userExperience._id) {
         app.globalData.userExperience.totalWords += this.data.allWords.length;
         const db = wx.cloud.database();
-        await db.collection("userExperience").doc(app.globalData.userExperience._id).update({
-          data: {
-            totalWords: app.globalData.userExperience.totalWords,
-          },
-        });
+        await db
+          .collection("userExperience")
+          .doc(app.globalData.userExperience._id)
+          .update({
+            data: {
+              totalWords: app.globalData.userExperience.totalWords,
+            },
+          });
       }
     } catch (err) {
       console.error("Failed to save progress to cloud:", err);
@@ -137,9 +149,11 @@ Page({
     try {
       const db = wx.cloud.database();
       const startIndex = this.data.progress ? this.data.progress.finalIndex : 0;
-      console.log("start index", startIndex);
       const { data } = await db
         .collection("vocab")
+        .where({
+          source: this.data.source,
+        })
         .skip(startIndex)
         .limit(5)
         .get(); // Fetch from startIndex
@@ -149,6 +163,7 @@ Page({
         word: item.word,
         definition: item.definition,
         matching_lyric: item.matching_lyric,
+        title: item.title,
       }));
 
       const nextWord = allWords[0];
@@ -191,12 +206,6 @@ Page({
     if (inputValue === correctWord) {
       this.nextWord();
     }
-  },
-
-  showHint() {
-    this.setData({
-      isShowHint: true,
-    });
   },
 
   async nextWord() {

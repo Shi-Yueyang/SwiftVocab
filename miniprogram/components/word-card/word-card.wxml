@@ -10,4 +10,4 @@
     </view>
   </view>
 </view>
-<view class="matching-lyric" wx:if="{{isShowHint}}">{{matchingLyric}}</view>
+<view class="matching-lyric" wx:if="{{isShowHint}}">{{matchingLyric}} ({{title}}) </view>

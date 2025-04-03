@@ -12,6 +12,10 @@ Component({
       type: String,
       value: ''
     },
+    title:{
+      type:String,
+      value:''
+    },
     quizWord: {
       type: String,
       value: ''

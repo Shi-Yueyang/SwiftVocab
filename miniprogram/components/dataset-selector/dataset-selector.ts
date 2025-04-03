@@ -18,11 +18,10 @@ Component({
 
   methods: {
     bindDatasetChange: function(e: WechatMiniprogram.TouchEvent<any>) {
-      console.log('bindDatasetChange', e.detail.value)
       this.setData({
         datasetIndex: e.detail.value
       })
-      this.triggerEvent('sourceId', {datasetIndex: e.detail.value})
+      this.triggerEvent('datasetchange', {sourceId: e.detail.value})
     }
   }
 })

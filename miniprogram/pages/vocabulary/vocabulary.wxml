@@ -8,6 +8,7 @@
     word="{{currentWord.word}}"
     definition="{{currentWord.definition}}"
     matching-lyric="{{currentWord.matching_lyric}}"
+    title="{{currentWord.title}}"
     quiz-word="{{quizWord}}"
     bind:submit="onSubmit"
     bind:input="onInput"

@@ -5,13 +5,16 @@ interface UserExperience {
   _openid?: string; //to identify the user
 }
 
+interface Source{
+  name: string;
+  count: number;
+}
 interface IAppOption {
   globalData: {
-    allSources: string[];
+    allSources: Source[];
     userExperience: UserExperience | null;
   }
 }
-
 App<IAppOption>({
   globalData: {
     allSources: [],

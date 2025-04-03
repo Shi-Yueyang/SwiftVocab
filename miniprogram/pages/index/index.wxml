@@ -1,5 +1,5 @@
 <view class="container">
   
-  <dataset-selector sources="{{allSources}}" binddatasetchange="onSourceChange"></dataset-selector>
+  <dataset-selector sources="{{allSourceNames}}" bind:datasetchange="onSourceChange"></dataset-selector>
   <button bindtap="goToVocabulary">Go to Vocabulary</button>
 </view>

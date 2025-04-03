@@ -7,13 +7,14 @@ interface OpenIdResponse {
 }
 
 
+
 // Add getApp type
 const app = getApp<IAppOption>();
 
 Page({
   data: {
-    allSources: [] as string[],
-    sourceId: 1,
+    allSourceNames: [] as String[],
+    sourceId: 0,
   },
   async onLoad() {
     await this.loadUserExperience();
@@ -33,15 +34,14 @@ Page({
         })
         .end();
       const sources = result.list as Array<{ _id: string; count: number }>
-      console.log('Unique sources fetched:', sources);
       
-      const allSources = sources.map(source => source._id);
+      console.log('Unique sources fetched:', sources);
+      const allSources = sources.map(source => ({ name: source._id, count: source.count }));
       // Update both global and local data
       app.globalData.allSources = allSources;
       this.setData({
-        allSources: allSources
+        allSourceNames: allSources.map(source=>source.name),
       });
- 
 
     } catch (error) {
       console.error('Error fetching unique sources:', error);
@@ -55,9 +55,12 @@ Page({
 
       if (data && data.length > 0) {
         const userExp = data[0] as UserExperience;
+        console.log('userExp',userExp);
         app.globalData.userExperience = {
           totalWords: userExp.totalWords,
-          learningTime: userExp.learningTime
+          learningTime: userExp.learningTime,
+          _id:userExp._id,
+          _openid:userExp._openid
         };
       } else {
         // Create initial user experience document
@@ -72,7 +75,6 @@ Page({
 
         app.globalData.userExperience = initialExperience;
       }
-      console.log("User experience loaded:", app.globalData.userExperience);
     } catch (err) {
       console.error("Failed to load user experience:", err);
     }
@@ -82,10 +84,11 @@ Page({
     this.setData({
       sourceId:e.detail.sourceId,
     });
+    console.log("Selected source ID:", this.data.sourceId);
   },
 
   goToVocabulary() {
-    console.log("Navigating to vocabulary page");
+    console.log("Navigating to vocabulary page, source id", this.data.sourceId);
     wx.navigateTo({
       url: `/pages/vocabulary/vocabulary?sourceId=${this.data.sourceId}`,
     });    
