@@ -1,5 +1,5 @@
 <view class="container">
-  
   <dataset-selector sources="{{allSourceNames}}" bind:datasetchange="onSourceChange"></dataset-selector>
-  <button bindtap="goToVocabulary">Go to Vocabulary</button>
+  <image class="cat-image" src="{{ catUrl}}" mode="aspectFill"></image>
+  <button bindtap="goToVocabulary">Start</button>
 </view>

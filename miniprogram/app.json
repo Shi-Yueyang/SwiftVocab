@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/vocabulary/vocabulary",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/cat/cat"
   ],
   "window": {
     "navigationBarTextStyle": "black",
@@ -28,7 +29,7 @@
         "iconPath": "images/icons/home.png",
         "selectedIconPath": "images/icons/home-active.png"
       },
-
+      
       {
         "pagePath": "pages/settings/settings",
         "text": "我的",

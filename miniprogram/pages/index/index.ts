@@ -6,8 +6,6 @@ interface OpenIdResponse {
   test: string;
 }
 
-
-
 // Add getApp type
 const app = getApp<IAppOption>();
 
@@ -15,11 +13,17 @@ Page({
   data: {
     allSourceNames: [] as String[],
     sourceId: 0,
+    catUrl: "https://cataas.com/cat",
   },
   async onLoad() {
     await this.loadUserExperience();
     await this.fetchUniqueSources();
     console.log("Index page loaded");
+  },
+  onShow() {
+    this.setData({
+      catUrl: "https://cataas.com/cat?" + new Date().getTime(), // Force reload the cat image
+    });
   },
 
   async fetchUniqueSources() {
