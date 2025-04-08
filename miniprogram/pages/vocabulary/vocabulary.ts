@@ -10,6 +10,7 @@ interface LearningProgress {
   finalIndex: number;
   source: string;
   totalNumber?:number;
+  progressPercent?:number;
   _id?: string; 
   _openid?: string; 
 }
@@ -64,7 +65,6 @@ Page({
       const progress = (data as DBProgress[]).find(
         (item) => item.source === this.data.source  
       );
-      console.log('progress',progress);
       if (progress) {
         this.setData({
           progress: {
@@ -183,6 +183,8 @@ Page({
             .replace(nextWord.word, "_____"),
         },
       });
+      console.log('cheat',nextWord.word);
+
     } catch (err) {
       console.error("Failed to fetch words:", err);
       wx.showToast({
@@ -247,6 +249,7 @@ Page({
             .replace(nextWord.word, "_____"),
         },
       });
+      console.log('cheat',nextWord.word);
     }
   },
 });

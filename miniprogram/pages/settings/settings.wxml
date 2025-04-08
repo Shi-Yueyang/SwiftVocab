@@ -9,10 +9,12 @@
   </view>
 
   <view class="category-list">
-    <block wx:for="{{vocabularyCategories}}" wx:key="name">
+    <block wx:for="{{learningProgress}}" wx:key="name">
       <view class="category-item">
-        <text class="category-name">{{item.name}}</text>
-        <progress percent="{{item.progress}}" border-radius="8" stroke-width="8" activeColor="#07c160"/>
+        <text class="category-name">{{item.source}}</text>
+        <progress percent="{{item.progressPercent}}" border-radius="8" stroke-width="8" activeColor="#07c160"/>
+        <text class="progress-text">{{item.finalIndex}}/{{item.totalNumber}} </text>
+
       </view>
     </block>
   </view>
