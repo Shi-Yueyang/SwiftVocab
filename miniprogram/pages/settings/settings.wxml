@@ -13,7 +13,7 @@
       <view class="category-item">
         <text class="category-name">{{item.source}}</text>
         <progress percent="{{item.progressPercent}}" border-radius="8" stroke-width="8" activeColor="#07c160"/>
-        <text class="progress-text">{{item.finalIndex}}/{{item.totalNumber}} </text>
+        <text class="progress-text">{{item.finalIndex}}/{{item.totalNumber }} </text>
 
       </view>
     </block>
