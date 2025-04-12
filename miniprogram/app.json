@@ -2,8 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/vocabulary/vocabulary",
-    "pages/settings/settings",
-    "pages/cat/cat"
+    "pages/settings/settings"
   ],
   "window": {
     "navigationBarTextStyle": "black",

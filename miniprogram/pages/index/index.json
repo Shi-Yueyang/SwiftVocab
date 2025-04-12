@@ -1,6 +1,5 @@
 {
   "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/navigation-bar",
     "dataset-selector": "/components/dataset-selector/dataset-selector"
   }
 }

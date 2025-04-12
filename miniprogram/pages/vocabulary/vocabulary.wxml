@@ -1,5 +1,4 @@
 <view class="container">
-  <!-- <navigation-bar></navigation-bar> -->
   <view class="progress-bar">
     <text>Progress: {{currentIndex + 1}}/{{allWords.length}}</text>
   </view>
